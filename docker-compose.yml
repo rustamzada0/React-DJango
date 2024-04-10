@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    container_name: django
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - "db"
+    env_file: .env
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./backend/database:/var/lib/postgresql/data
+    env_file: .env
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
